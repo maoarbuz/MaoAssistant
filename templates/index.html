@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Bot</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            flex-direction: column;
+        }
+
+        #dialogue {
+            width: 800px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease;
+            overflow-y: auto; /* Добавлено для прокрутки */
+            flex-grow: 1;
+        }
+
+        #assistant-window {
+            width: 800px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+        }
+
+        #greeting {
+            margin-bottom: 20px;
+        }
+
+        .user-message, .bot-message {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .user-message.show, .bot-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .rainbow-text {
+            background-image: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow-animation 5s linear infinite;
+        }
+
+        @keyframes rainbow-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .vvod {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="greeting">
+        <div id="assistant-window">
+            <center>
+                <h1 id="rainbow-text">MaoAssistant</h1>
+            </center>
+        </div>
+    </div>
+    <div id="dialogue"></div>
+    <div class="vvod"><input type="text" id="userInput" style="width: 800px; height: 20px;"></div>
+    <div class="vvod"><button onclick="askBot()">Задать вопрос</button></div>
+
+<script>
+    $(document).ready(function() {
+        $('#userInput').keypress(function(event) {
+            if (event.which === 13) {
+                askBot();
+            }
+        });
+    });
+
+    var dialogue = $('#dialogue');
+
+    dialogue.on('scroll', function() {
+        var isScrolledToBottom = dialogue[0].scrollHeight - dialogue.scrollTop() === dialogue.outerHeight();
+        dialogue.stop();
+        if (!isScrolledToBottom) {
+            dialogue.addClass('manually-scrolled');
+        }
+    });
+
+    function askBot() {
+        var userInput = $('#userInput').val();
+        dialogue.append('<p class="user-message"><strong>Вы: </strong>' + userInput + '</p>').find('.user-message:last').addClass('show');
+        dialogue.animate({ scrollTop: dialogue.prop("scrollHeight") }, 500);
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json;charset=UTF-8',
+            url: '/ask',
+            data: JSON.stringify({'user_input': userInput}),
+            success: function(response) {
+                setTimeout(function() {
+                    dialogue.append('<p class="bot-message"><strong>Mao: </strong>' + response.response + '</p>').find('.bot-message:last').addClass('show');
+                    if (!dialogue.hasClass('manually-scrolled')) {
+                        dialogue.animate({ scrollTop: dialogue.prop("scrollHeight") }, 500);
+                    }
+                    dialogue.removeClass('manually-scrolled');
+                }, 300);
+            }
+        });
+        $('#userInput').val('');
+    }
+    const rainbowText = document.getElementById('rainbow-text');
+
+    let hue = 0;
+    const rainbowInterval = setInterval(() => {
+        rainbowText.style.color = `hsl(${hue}, 100%, 50%)`;
+        hue = (hue + 1) % 360;
+    }, 20);
+</script>
+
+
+</body>
+</html>
