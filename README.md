@@ -35,3 +35,7 @@ It can be used for:
 3. Product navigation and information: The bot can provide information about your product or service, helping users understand its features, functions, and ways of use.
 
 4. Entertainment and recreational purposes: Your chatbot can also be used to entertain users by providing jokes, riddles, or interesting facts.
+
+
+To run MaoAssistant, you will need any Python IDE, such as PyCharm.
+All you need to do is to launch this project in that IDE.
