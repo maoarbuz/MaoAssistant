@@ -8,10 +8,10 @@ def read_keywords(file_path):
     with open(file_path, encoding='utf-8') as f:
         lines = f.read().splitlines()
     for line in lines:
-        if line.strip():  # пропускаем пустые строки
+        if line.strip():
             parts = line.split(';')
-            queries = [query.strip() for query in parts[0].split(':')]  # получаем список ключевых слов
-            answers = [answer.strip() for answer in parts[1:] if answer.strip()]  # остальные части - ответы
+            queries = [query.strip() for query in parts[0].split(':')]
+            answers = [answer.strip() for answer in parts[1:] if answer.strip()]
             for query in queries:
                 keywords[query.lower()] = answers
     print("Keywords:", keywords)
